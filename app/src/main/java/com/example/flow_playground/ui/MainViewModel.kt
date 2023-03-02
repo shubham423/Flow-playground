@@ -2,6 +2,7 @@ package com.example.flow_playground.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -43,7 +44,7 @@ class MainViewModel() : ViewModel() {
 
     private fun collectCountDownFlowReduce() {
         viewModelScope.launch {
-            val reducedValue=countDownFlow.reduce { ac, value ->
+            val reducedValue = countDownFlow.reduce { ac, value ->
                 ac + value
             }
             println("countdown reduce $reducedValue")
@@ -52,7 +53,7 @@ class MainViewModel() : ViewModel() {
 
     private fun collectCountDownFlowFold() {
         viewModelScope.launch {
-            val reducedValue=countDownFlow.fold(100) { ac, value ->
+            val reducedValue = countDownFlow.fold(100) { ac, value ->
                 ac + value
             }
             println("countdown fold $reducedValue")
@@ -66,6 +67,26 @@ class MainViewModel() : ViewModel() {
             countDownFlow.collectLatest {
                 delay(1500)
                 println("countdown latest $it")
+            }
+        }
+    }
+
+    @OptIn(FlowPreview::class)
+    private fun collectFlow() {
+        viewModelScope.launch {
+            val flow1 = flow {
+                emit(1)
+                delay(500L)
+                emit(2)
+            }
+            flow1.flatMapConcat {
+                flow {
+                    emit(it + 1)
+                    delay(500L)
+                    emit(it + 2)
+                }
+            }.collect{
+                println("flatmapconcat values $it")
             }
         }
     }
