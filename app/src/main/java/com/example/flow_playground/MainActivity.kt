@@ -9,6 +9,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,17 +22,22 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FlowplaygroundTheme {
-                val viewModel=viewModel<MainViewModel>()
-                val time=viewModel.countDownFlow.collectAsState(initial = 10)
+                val viewModel = viewModel<MainViewModel>()
+                val time = viewModel.countDownFlow.collectAsState(initial = 10)
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Text(text = "Hello ${time.value}!")
+                    CountDownView(time)
                 }
             }
         }
     }
+}
+
+@Composable
+private fun CountDownView(time: State<Int>) {
+    Text(text = "Time ${time.value}!")
 }
 
 @Preview(showBackground = true)
