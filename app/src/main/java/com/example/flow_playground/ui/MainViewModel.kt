@@ -27,8 +27,9 @@ class MainViewModel() : ViewModel() {
     }
 
     init {
-        sharedFlowExample()
-        squareNumber(3)
+        viewModelScope.launch {
+          exampleCombine()
+        }
     }
 
     private fun sharedFlowExample() {
@@ -118,4 +119,45 @@ class MainViewModel() : ViewModel() {
             }
         }
     }
+
+    private suspend fun exampleOfMerge(){
+        val ints: Flow<Int> = flowOf(1, 2, 3)
+        val doubles: Flow<Double> = flowOf(0.1, 0.2, 0.3)
+
+        val together: Flow<Number> = merge(ints, doubles)
+        print("merge "+together.toList())
+        // [1, 0.1, 0.2, 0.3, 2, 3]
+        // or [1, 0.1, 0.2, 0.3, 2, 3]
+        // or [0.1, 1, 2, 3, 0.2, 0.3]
+        // or any other combination
+    }
+
+    //it closes when the first flow closes
+    private suspend fun exampleOfZip(){
+            val flow1 = flowOf("A", "B", "C")
+
+            val flow2 = flowOf(1, 2, 3, 4)
+            flow1.zip(flow2) { f1, f2 -> "${f1}_${f2}" }
+                .collect { println("zip "+it) }
+
+        // A_1
+        // B_2
+        // C_3
+
+    }
+
+    suspend fun exampleCombine() {
+        val flow1 = flowOf("A", "B", "C")
+        val flow2 = flowOf(1, 2, 3, 4)
+        flow1.combine(flow2) { f1, f2 -> "${f1}_${f2}" }
+            .collect { println("combine "+it) }
+
+        //A_1
+        // B_1
+        // C_1
+        // C_2
+        // C_3
+        // C_4
+    }
+
 }
