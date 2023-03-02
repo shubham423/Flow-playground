@@ -3,9 +3,7 @@ package com.example.flow_playground.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class MainViewModel() : ViewModel() {
@@ -30,6 +28,34 @@ class MainViewModel() : ViewModel() {
             countDownFlow.collect {
                 println("countdown $it")
             }
+        }
+    }
+
+    private fun collectCountDownFlowOperators() {
+        viewModelScope.launch {
+            countDownFlow.filter { it % 2 == 0 }
+                .map { it * it }
+                .collect {
+                    println("countdown operator $it")
+                }
+        }
+    }
+
+    private fun collectCountDownFlowReduce() {
+        viewModelScope.launch {
+            val reducedValue=countDownFlow.reduce { ac, value ->
+                ac + value
+            }
+            println("countdown reduce $reducedValue")
+        }
+    }
+
+    private fun collectCountDownFlowFold() {
+        viewModelScope.launch {
+            val reducedValue=countDownFlow.fold(100) { ac, value ->
+                ac + value
+            }
+            println("countdown fold $reducedValue")
         }
     }
 
